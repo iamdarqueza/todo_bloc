@@ -1,11 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_bloc/data/local/task.dart';
+import 'package:todo_bloc/screens/home/bloc/home_bloc.dart';
+import 'package:todo_bloc/screens/home/bloc/home_event.dart';
 import 'package:todo_bloc/screens/new_task/bloc/bloc.dart';
 import 'package:todo_bloc/utils/color_constant.dart';
 import 'package:todo_bloc/utils/default_button.dart';
 import 'package:todo_bloc/utils/dialog.dart';
+import 'package:todo_bloc/utils/font_constant.dart';
 import 'package:todo_bloc/utils/size_config.dart';
+import 'package:intl/intl.dart';
 
 class NewTaskForm extends StatefulWidget {
   @override
@@ -14,16 +18,19 @@ class NewTaskForm extends StatefulWidget {
 
 class _NewTaskFormState extends State<NewTaskForm> {
   late NewTaskBloc newTaskBloc;
+  late HomeBloc homeBloc;
 
   final TextEditingController taskNameController = TextEditingController();
-  final TextEditingController taskDescriptionController = TextEditingController();
+  final TextEditingController taskDescriptionController =
+      TextEditingController();
+  final TextEditingController dueDateController = TextEditingController();
 
-  bool isShowPassword = false;
-  bool isShowConfirmPassword = false;
+  DateTime? dueDate;
 
   @override
   void initState() {
     newTaskBloc = BlocProvider.of<NewTaskBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -36,15 +43,20 @@ class _NewTaskFormState extends State<NewTaskForm> {
 
   bool get isPopulated =>
       taskNameController.text.isNotEmpty &&
-      taskDescriptionController.text.isNotEmpty;
+      taskDescriptionController.text.isNotEmpty &&
+      dueDateController.text.isNotEmpty;
 
   bool isAddTaskButtonEnabled() {
-    return isPopulated;
+    return !newTaskBloc.state.isSubmitting && isPopulated;
   }
 
   void onAddTask() {
     if (isAddTaskButtonEnabled()) {
-      Task newTask = Task(title: taskNameController.text, description: taskDescriptionController.text, dateCreated: '', dueDate: '');
+      Task newTask = Task(
+          title: taskNameController.text,
+          description: taskDescriptionController.text,
+          dateCreated: '${DateTime.now()}',
+          dueDate: '$dueDate');
       newTaskBloc.add(AddTask(newTask));
     }
   }
@@ -85,6 +97,8 @@ class _NewTaskFormState extends State<NewTaskForm> {
                   SizedBox(height: SizeConfig.defaultSize * 2),
                   _buildTaskDescriptionInput(),
                   SizedBox(height: SizeConfig.defaultSize * 2),
+                  _buildDueDateInput(),
+                  SizedBox(height: SizeConfig.defaultSize * 2),
                   _buildButtonAddTask(),
                 ],
               ),
@@ -100,43 +114,87 @@ class _NewTaskFormState extends State<NewTaskForm> {
     return TextFormField(
       controller: taskNameController,
       keyboardType: TextInputType.name,
+      onChanged: (value) {
+        newTaskBloc.add(TextFieldChanged());
+      },
+      style: FONT_CONST.TASK_REGULAR,
       decoration: InputDecoration(
-              hintText: 'Enter task name',
-              filled: true,
-              fillColor: Colors.grey[200], // Background color
-              border: InputBorder.none, // Remove the border
-            ),
+        hintText: 'Enter task name',
+        filled: true,
+        fillColor: Colors.white,
+        border: InputBorder.none,
+      ),
     );
   }
-
 
   _buildTaskDescriptionInput() {
     return TextFormField(
       controller: taskDescriptionController,
       keyboardType: TextInputType.name,
+      onChanged: (value) {
+        newTaskBloc.add(TextFieldChanged());
+      },
+      maxLines: 2,
+      style: FONT_CONST.TASK_REGULAR,
       decoration: InputDecoration(
-              hintText: 'Enter description',
-              filled: true,
-              fillColor: Colors.grey[200], // Background color
-              border: InputBorder.none, // Remove the border
-            ),
+        hintText: 'Enter description',
+        filled: true,
+        fillColor: Colors.white,
+        border: InputBorder.none,
+      ),
     );
   }
 
+  _buildDueDateInput() {
+    return TextFormField(
+        controller: dueDateController,
+        keyboardType: TextInputType.datetime,
+        onChanged: (value) {
+          newTaskBloc.add(TextFieldChanged());
+        },
+        maxLines: 1,
+        style: FONT_CONST.DUE_DATE_REGULAR_FILLED,
+        readOnly: true,
+        decoration: InputDecoration(
+          hintText: 'Choose due date',
+          hintStyle: FONT_CONST.DUE_DATE_REGULAR_HINT,
+          filled: true,
+          fillColor: Colors.white,
+          border: InputBorder.none,
+        ),
+        onTap: () async {
+          DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(), //get today's date
+              firstDate: DateTime(
+                  2000), //DateTime.now() - not to allow to choose before today.
+              lastDate: DateTime(2101));
+
+          if (pickedDate != null) {
+            dueDate = pickedDate;
+            String formattedDate = DateFormat('EEEE, MMM d').format(pickedDate);
+            setState(() {
+              dueDateController.text = formattedDate;
+            });
+          } else {
+            print("Date is not selected");
+          }
+        });
+  }
 
   _buildButtonAddTask() {
     return DefaultButton(
       child: Text(
         'ADD TASK',
         style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.normal,
-                color: Colors.green,
-              ),
+          fontSize: 16,
+          fontFamily: 'Montserrat',
+          fontWeight: FontWeight.normal,
+          color: isAddTaskButtonEnabled() ? Colors.white : Colors.black54,
+        ),
       ),
       onPressed: onAddTask,
-     backgroundColor: isAddTaskButtonEnabled()
+      backgroundColor: isAddTaskButtonEnabled()
           ? COLOR_CONST.primaryColor
           : COLOR_CONST.cardShadowColor,
     );

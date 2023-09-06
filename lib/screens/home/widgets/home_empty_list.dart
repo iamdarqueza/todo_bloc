@@ -10,7 +10,7 @@ class HomeEmptyList extends StatelessWidget {
         children: [
           SizedBox(height: 30.0),
           Lottie.asset(
-              'assets/lottie/loading_cat.json'), // Replace with your Lottie animation file
+              'assets/lottie/loading_cat.json', frameRate: FrameRate(30)), 
           SizedBox(height: 10.0),
           Padding(
             padding: EdgeInsets.fromLTRB(50, 0, 50, 0),

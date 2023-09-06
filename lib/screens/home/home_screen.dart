@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHome()),
+      create: (context) => HomeBloc()..add(LoadEmptyHome()),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -37,10 +37,15 @@ class HomeScreen extends StatelessWidget {
                     ))),
             floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => NewTaskScreen()));
-
-                  //  Navigator.pushNamed(context, AppRouter.ADDTASK);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NewTaskScreen())).then((value) => {
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          BlocProvider.of<HomeBloc>(context).add(LoadHome());
+                        })
+                      });
                 },
                 backgroundColor: Color(0xFF2CAE76),
                 child: Icon(Icons.add, color: Colors.white)),

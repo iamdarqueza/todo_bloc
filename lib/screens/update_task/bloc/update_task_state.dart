@@ -1,22 +1,24 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_bloc/data/local/task.dart';
 
 @immutable
-class NewTaskState {
+class UpdateTaskState {
   final bool isSubmitting;
   final bool isSuccess;
   final bool isFailure;
   final String? message;
 
 
-  NewTaskState({
+  UpdateTaskState({
     required this.isSubmitting,
     required this.isSuccess,
     required this.isFailure,
     this.message,
   });
 
-  factory NewTaskState.empty() {
-    return NewTaskState(
+  factory UpdateTaskState.empty() {
+    return UpdateTaskState(
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
@@ -24,16 +26,16 @@ class NewTaskState {
     );
   }
 
-  factory NewTaskState.loading() {
-    return NewTaskState(
+  factory UpdateTaskState.loading() {
+    return UpdateTaskState(
         isSubmitting: true,
         isSuccess: false,
         isFailure: false,
         message: "Loading ...");
   }
 
-  factory NewTaskState.failure(String message) {
-    return NewTaskState(
+  factory UpdateTaskState.failure(String message) {
+    return UpdateTaskState(
       isSuccess: false,
       isSubmitting: false,
       isFailure: true,
@@ -41,8 +43,8 @@ class NewTaskState {
     );
   }
 
-  factory NewTaskState.success() {
-    return NewTaskState(
+  factory UpdateTaskState.success() {
+    return UpdateTaskState(
       isSubmitting: false,
       isSuccess: true,
       isFailure: false,
@@ -50,7 +52,7 @@ class NewTaskState {
     );
   }
 
-    NewTaskState update() {
+    UpdateTaskState update() {
     return cloneWith(
       isSubmitting: false,
       isSuccess: false,
@@ -59,13 +61,13 @@ class NewTaskState {
     );
   }
 
-  NewTaskState cloneWith({
+  UpdateTaskState cloneWith({
     bool? isSubmitting,
     bool? isSuccess,
     bool? isFailure,
     String? message,
   }) {
-    return NewTaskState(
+    return UpdateTaskState(
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
@@ -75,6 +77,9 @@ class NewTaskState {
 
   @override
   String toString() {
-    return 'NewTaskState{isSubmitting: $isSubmitting, isSuccess: $isSuccess, isFailure: $isFailure, message: $message}';
+    return 'UpdateTaskState{isSubmitting: $isSubmitting, isSuccess: $isSuccess, isFailure: $isFailure, message: $message}';
   }
+  
 }
+
+

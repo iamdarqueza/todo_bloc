@@ -12,9 +12,13 @@ class HomeList extends StatefulWidget {
 }
 
 class _HomeListState extends State<HomeList> {
+  late HomeBloc homeBloc;
+
   @override
   void initState() {
     super.initState();
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    homeBloc.add(LoadHome());
   }
 
   @override
@@ -26,9 +30,9 @@ class _HomeListState extends State<HomeList> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, homeState) {
       if (homeState is HomeLoaded) {
-        final incompleteTasks = homeState.incompleteTaskResponse;
-         final completedTasks = homeState.completedTaskResponse;
-
+        var incompleteTasks = homeState.incompleteTaskResponse;
+        var completedTasks = homeState.completedTaskResponse;
+        print('LIST ${incompleteTasks.length}');
         if (incompleteTasks.isEmpty && completedTasks.isEmpty) {
           return HomeEmptyList();
         } else {
@@ -41,8 +45,7 @@ class _HomeListState extends State<HomeList> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Incomplete Tasks:',
-                          style: FONT_CONST.MEDIUM_DEFAULT_18),
+                      Text('Todos:', style: FONT_CONST.MEDIUM_DEFAULT_18),
                       SizedBox(
                         height: 5,
                       ),
@@ -59,20 +62,38 @@ class _HomeListState extends State<HomeList> {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: incompleteTasks.length,
                 itemBuilder: (context, index) {
-                  final task = incompleteTasks[index];
-                  return TaskWidget(
-                    task: task,
-                  );
+                  var task = incompleteTasks[index];
+
+                  return Dismissible(
+                      key: UniqueKey(),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) {
+                        BlocProvider.of<HomeBloc>(context)
+                            .add(RemoveTask(task.id ?? 0));
+                      },
+                      background: Container(
+                        color: Colors.red,
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                        alignment: Alignment.centerRight,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: TaskWidget(
+                        task: task,
+                      ));
                 },
               ),
-
-               Padding(
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Completed Tasks:',
-                          style: FONT_CONST.MEDIUM_DEFAULT_18),
+                      Text('Completed:', style: FONT_CONST.MEDIUM_DEFAULT_18),
                       SizedBox(
                         height: 5,
                       ),
@@ -89,10 +110,27 @@ class _HomeListState extends State<HomeList> {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: completedTasks.length,
                 itemBuilder: (context, index) {
-                  final task = completedTasks[index];
-                  return TaskWidget(
-                    task: task,
-                  );
+                  var task = completedTasks[index];
+
+                  return Dismissible(
+                      key: UniqueKey(),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) {
+                        BlocProvider.of<HomeBloc>(context)
+                            .add(RemoveTask(task.id ?? 0));
+                      },
+                      background: Container(
+                        color: Colors.red,
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                        alignment: Alignment.centerRight,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: TaskWidget(
+                        task: task,
+                      ));
                 },
               )
             ],
@@ -106,7 +144,11 @@ class _HomeListState extends State<HomeList> {
       if (homeState is HomeLoadFailure) {
         return Center(child: Text(homeState.error));
       }
-      return Center(child: Text("Something went wrong."));
+      return Center(child: Text(''));
     });
   }
+
+  // refreshState() {
+  //  homeBloc.add
+  // }
 }

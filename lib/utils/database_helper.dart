@@ -37,33 +37,47 @@ class DatabaseHelper {
     await db.insert('tasks', task.toMap());
   }
 
-  Future<void> toggleTaskCompletion(int taskId) async {
-  final db = await instance.database;
+  Future<void> deleteTask(int taskId) async {
+    final db = await instance.database;
+    await db.delete('tasks', where: 'id = ?', whereArgs: [taskId]);
+  }
 
-  // Fetch the current isCompleted status
-  final currentStatus = await db.rawQuery(
-    'SELECT isCompleted FROM tasks WHERE id = ?',
-    [taskId],
-  );
+  Future<void> updateExistingTask(Task task) async {
+    final db = await instance.database;
 
-  if (currentStatus.isNotEmpty) {
-    final isCompleted = currentStatus[0]['isCompleted'] == 1 ? 0 : 1;
+    final updatedTask = {
+      'title': task.title,
+      'description': task.description,
+      'dueDate': task.dueDate,
+    };
 
-    // Update the task with the opposite status
-    await db.rawUpdate(
-      'UPDATE tasks SET isCompleted = ? WHERE id = ?',
-      [isCompleted, taskId],
+    await db.update(
+      'tasks',
+      updatedTask,
+      where: 'id = ?',
+      whereArgs: [task.id],
     );
   }
-}
 
-//   Future<void> updateTaskCompletion(int taskId, bool isCompleted) async {
-//   final db = await instance.database;
-//   await db.rawUpdate(
-//     'UPDATE tasks SET isCompleted = ? WHERE id = ?',
-//     [isCompleted ? 1 : 0, taskId], // 1 for true (completed), 0 for false (not completed)
-//   );
-// }
+  Future<void> toggleTaskCompletion(int taskId) async {
+    final db = await instance.database;
+
+    // Fetch the current isCompleted status
+    final currentStatus = await db.rawQuery(
+      'SELECT isCompleted FROM tasks WHERE id = ?',
+      [taskId],
+    );
+
+    if (currentStatus.isNotEmpty) {
+      final isCompleted = currentStatus[0]['isCompleted'] == 1 ? 0 : 1;
+
+      // Update the task with the opposite status
+      await db.rawUpdate(
+        'UPDATE tasks SET isCompleted = ? WHERE id = ?',
+        [isCompleted, taskId],
+      );
+    }
+  }
 
   Future<void> updateTask(int taskId) async {
     final db = await instance.database;
@@ -80,26 +94,37 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Task>> getCustomTasks({bool? completed}) async {
-  final db = await instance.database;
-  
-  List<Map<String, dynamic>> maps;
-  
-  if (completed != null) {
-    // Filter tasks based on the 'isCompleted' column
-    maps = await db.query('tasks', where: 'isCompleted = ?', whereArgs: [completed ? 1 : 0]);
-  } else {
-    // Retrieve all tasks if 'completed' is null
-    maps = await db.query('tasks');
-  }
-  
-  return List.generate(maps.length, (i) {
-    return Task.fromMap(maps[i]);
-  });
-}
-
-  Future<void> deleteTask(int taskId) async {
+  Future<Task?> getTaskById(int taskId) async {
     final db = await instance.database;
-    await db.delete('tasks', where: 'id = ?', whereArgs: [taskId]);
+    final List<Map<String, dynamic>> maps = await db.query(
+      'tasks',
+      where: 'id = ?',
+      whereArgs: [taskId],
+    );
+
+    if (maps.isNotEmpty) {
+      return Task.fromMap(maps.first);
+    } else {
+      return null; // Return null if no task with the specified ID is found.
+    }
+  }
+
+  Future<List<Task>> getCustomTasks({bool? completed}) async {
+    final db = await instance.database;
+
+    List<Map<String, dynamic>> maps;
+
+    if (completed != null) {
+      // Filter tasks based on the 'isCompleted' column
+      maps = await db.query('tasks',
+          where: 'isCompleted = ?', whereArgs: [completed ? 1 : 0]);
+    } else {
+      // Retrieve all tasks if 'completed' is null
+      maps = await db.query('tasks');
+    }
+
+    return List.generate(maps.length, (i) {
+      return Task.fromMap(maps[i]);
+    });
   }
 }

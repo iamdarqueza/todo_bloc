@@ -60,23 +60,28 @@ class _HomeHeaderState extends State<HomeHeader> {
               SizedBox(
                 height: 10,
               ),
-              LinearProgressIndicator(
-                value: progressValue, // Set the progress value (0.0 to 1.0)
-                backgroundColor: Colors.grey[300], // Background color
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(0xFF2CAE76)), // Progress color
-              ),
+              _buildLinearProgressBar(incompleteTasks, completedTasks)
             ],
           ),
         );
       }
 
-      return Center(child: Text("Something went wrong."));
+      return Center(child: Text(''));
     });
   }
 
   Widget _buildTextTask(List<Task> incomplete, List<Task> completed) {
-    if (incomplete.isEmpty && completed.isEmpty) {
+    if (incomplete.isEmpty && completed.isNotEmpty) {
+      return Text(
+        'All tasks completed',
+        style: TextStyle(
+          fontSize: 20,
+          fontFamily: 'Montserrat',
+          fontWeight: FontWeight.w500,
+          color: Colors.grey,
+        ),
+      );
+    } else if (incomplete.isEmpty && completed.isEmpty) {
       return Text(
         'No Tasks available',
         style: TextStyle(
@@ -95,6 +100,26 @@ class _HomeHeaderState extends State<HomeHeader> {
           fontWeight: FontWeight.w500,
           color: Colors.grey,
         ),
+      );
+    }
+  }
+
+  Widget _buildLinearProgressBar(List<Task> incomplete, List<Task> completed) {
+    final totalTasks = incomplete.length + completed.length;
+    final progressValue = completed.length / totalTasks;
+    if (incomplete.isEmpty && completed.isEmpty) {
+      return LinearProgressIndicator(
+        value: 0, // Set the progress value (0.0 to 1.0)
+        backgroundColor: Colors.grey[300], // Background color
+        valueColor:
+            AlwaysStoppedAnimation<Color>(Color(0xFF2CAE76)), // Progress color
+      );
+    } else {
+      return LinearProgressIndicator(
+        value: progressValue, // Set the progress value (0.0 to 1.0)
+        backgroundColor: Colors.grey[300], // Background color
+        valueColor:
+            AlwaysStoppedAnimation<Color>(Color(0xFF2CAE76)), // Progress color
       );
     }
   }

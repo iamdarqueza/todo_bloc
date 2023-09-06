@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_bloc/screens/home/bloc/home_bloc.dart';
+import 'package:todo_bloc/screens/home/bloc/home_event.dart';
 import 'package:todo_bloc/screens/home/home_screen.dart';
 import 'package:todo_bloc/utils/color_constant.dart';
 import 'package:todo_bloc/utils/font_constant.dart';
@@ -28,10 +31,7 @@ class UtilDialog {
                 style: FONT_CONST.BOLD,
               ),
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                    (route) => false);
+                Navigator.pop(context);
               },
             )
           ],
@@ -90,7 +90,9 @@ class UtilDialog {
                 style: FONT_CONST.REGULAR_WHITE_18,
               ),
               onPressed: () {
-                Navigator.of(context).popUntil((route) => route.settings.name == "Home");
+              
+                Navigator.of(context)
+                    .popUntil((route) => route.settings.name == "Home");
               },
               style: TextButton.styleFrom(
                 backgroundColor: COLOR_CONST.primaryColor,
@@ -119,8 +121,9 @@ class UtilDialog {
                 style: FONT_CONST.MEDIUM_PRIMARY_18,
               ),
               onPressed: () {
+                 
                 Navigator.of(context)
-                    .popUntil((route) => route.settings.name == "Initial");
+                    .popUntil((route) => route.settings.name == "Home");
               },
             )
           ],

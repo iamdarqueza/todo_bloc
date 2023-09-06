@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_bloc/screens/new_task/bloc/bloc.dart';
-import 'package:todo_bloc/screens/new_task/widgets/new_task_form.dart';
+import 'package:todo_bloc/data/local/task.dart';
+import 'package:todo_bloc/screens/update_task/bloc/bloc.dart';
+import 'package:todo_bloc/screens/update_task/widgets/update_task_form.dart';
 import 'package:todo_bloc/utils/font_constant.dart';
 
-class NewTaskScreen extends StatelessWidget {
+class UpdateTaskScreen extends StatelessWidget {
+  final Task task;
+
+  const UpdateTaskScreen({Key? key, required this.task}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => NewTaskBloc(),
+        create: (context) => UpdateTaskFormBloc()..add(LoadCurrentTask(task)),
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(
-              'New Task',
+              'Update Task',
               style: FONT_CONST.BOLD_DEFAULT_20,
             ),
             leading: IconButton(
@@ -26,11 +31,7 @@ class NewTaskScreen extends StatelessWidget {
             ),
             backgroundColor: Colors.white,
           ),
-          body: ListView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.zero,
-            children: [NewTaskForm()],
-          ),
+          body: UpdateTaskForm(task: task,),
         ));
   }
 }

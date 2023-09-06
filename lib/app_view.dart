@@ -36,7 +36,6 @@ Widget build(BuildContext context) {
     onGenerateRoute: AppRouter.generateRoute,
     initialRoute: AppRouter.HOME,
 
-    // You can also set the home property if you want to specify the home screen.
     home: HomeScreen(),
   );
 }

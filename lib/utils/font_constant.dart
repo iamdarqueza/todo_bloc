@@ -24,6 +24,56 @@ class FONT_CONST {
     fontSize: SizeConfig.defaultSize * 1.4,
   );
 
+  static final TODO_TITLE = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.w500,
+    color: Colors.black,
+    fontSize: SizeConfig.defaultSize * 2,
+  );
+
+    static final TODO_TITLE_STRIKE = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.w500,
+    color: Colors.black,
+    fontSize: SizeConfig.defaultSize * 2,
+    decoration: TextDecoration.lineThrough
+  );
+
+  static final TODO_DESC = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.normal,
+    color: Color(0xFF868686),
+    fontSize: SizeConfig.defaultSize * 1.5,
+  );
+
+    static final TODO_DESC_24 = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.w500,
+    color: Color(0xFF868686),
+    fontSize: SizeConfig.defaultSize * 2,
+  );
+
+  static final TASK_REGULAR = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.w500,
+    color: Colors.black,
+    fontSize: SizeConfig.defaultSize * 2,
+  );
+
+  static final DUE_DATE_REGULAR_HINT = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.normal,
+    color: Color(0xFF2CAE76),
+    fontSize: SizeConfig.defaultSize * 2,
+  );
+
+  static final DUE_DATE_REGULAR_FILLED = TextStyle(
+    fontFamily: 'Montserrat',
+    fontWeight: FontWeight.w500,
+    color: Color(0xFF2CAE76),
+    fontSize: SizeConfig.defaultSize * 2,
+  );
+
   //REGULAR
   static final REGULAR_DEFAULT = REGULAR.copyWith(color: COLOR_CONST.textColor);
   static final REGULAR_DEFAULT_16 =
